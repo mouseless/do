@@ -39,7 +39,7 @@ architecture.
 
 > :bulb:
 >
-> Layers are named after the domain of their technology.
+> Layers are named after the concept of their technology.
 
 ```mermaid
 flowchart LR
@@ -141,18 +141,18 @@ flowchart TB
 
   subgraph Features
     subgraph Abstraction
-      A(Api)
+      A(Authentication)
       Db(Database)
     end
 
     subgraph Implementation
-      AR(Api.Rest)
+      AF(Authentication.FixedToken)
       DbM(Database.MySql)
     end
   end
 
-  HS -.configured by.-> AR
-  A --implemented by--> AR
+  HS -.configured by.-> AF
+  A --implemented by--> AF
   D -.uses.-> A
   D -.uses.-> Db
   Db --implemented by--> DbM

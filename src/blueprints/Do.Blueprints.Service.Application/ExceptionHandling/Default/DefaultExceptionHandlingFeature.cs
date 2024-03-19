@@ -10,7 +10,7 @@ public class DefaultExceptionHandlingFeature(Setting<string>? _typeUrlFormat = d
 {
     public void Configure(LayerConfigurator configurator)
     {
-        configurator.ConfigureTypeCollection(types =>
+        configurator.ConfigureDomainTypeCollection(types =>
         {
             types.Add<HandledException>();
             types.Add<IExceptionHandler>();

@@ -8,30 +8,29 @@ namespace Do.Domain;
 
 public class DomainLayer : LayerBase<BuildConfiguration>
 {
-    readonly IAssemblyCollection _assemblyCollection = new AssemblyCollection();
-    readonly ITypeCollection _typeCollection = new TypeCollection();
+    readonly IDomainAssemblyCollection _domainAssemblies = new DomainAssemblyCollection();
+    readonly IDomainTypeCollection _domainTypes = new DomainTypeCollection();
     readonly DomainBuilderOptions _domainBuilderOptions = new();
 
     protected override PhaseContext GetContext(BuildConfiguration phase) =>
         phase.CreateContextBuilder()
-            .Add<IAssemblyCollection>(_assemblyCollection)
-            .Add<ITypeCollection>(_typeCollection)
+            .Add<IDomainAssemblyCollection>(_domainAssemblies)
+            .Add<IDomainTypeCollection>(_domainTypes)
             .Add<DomainBuilderOptions>(_domainBuilderOptions)
             .Build();
 
     protected override IEnumerable<IPhase> GetPhases()
     {
-        yield return new BuildDomain(_assemblyCollection, _typeCollection, _domainBuilderOptions);
+        yield return new BuildDomain(_domainAssemblies, _domainTypes, _domainBuilderOptions);
     }
 
-    public class BuildDomain(IAssemblyCollection _assemblyCollection, ITypeCollection _typeCollection, DomainBuilderOptions _domainBuilderOptions)
+    public class BuildDomain(IDomainAssemblyCollection _domainAssemblies, IDomainTypeCollection _domainTypes, DomainBuilderOptions _domainBuilderOptions)
         : PhaseBase<ConfigurationManager>(PhaseOrder.Early)
     {
         protected override void Initialize(ConfigurationManager _)
         {
             var builder = new DomainModelBuilder(_domainBuilderOptions);
-
-            var model = builder.BuildFrom(_assemblyCollection, _typeCollection);
+            var model = builder.BuildFrom(_domainAssemblies, _domainTypes);
 
             Context.Add<DomainModel>(model);
         }

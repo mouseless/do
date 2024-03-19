@@ -1,9 +1,14 @@
+using Do.Domain.Model;
+
 namespace Do.Test;
 
 public abstract class TestServiceSpec : ServiceSpec
 {
-    static TestServiceSpec() =>
-        Init(
+    protected static DomainModel DomainModel { get; private set; } = default!;
+
+    static TestServiceSpec()
+    {
+        var context = Init(
             business: c => c.Default(assemblies: [typeof(Entity).Assembly]),
             communication: c => c.Mock(defaultResponses: response =>
             {
@@ -16,6 +21,9 @@ public abstract class TestServiceSpec : ServiceSpec
                 app.Features.AddConfigurationOverrider();
             }
         );
+
+        DomainModel = context.GetDomainModel();
+    }
 
     protected override string? GetDefaultSettingsValue(string key) =>
         key == "Int" ? "42" : "test value";

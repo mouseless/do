@@ -7,35 +7,26 @@ public class DomainModelBuilder(DomainBuilderOptions _domainBuilderOptions)
     readonly KeyedModelCollection<AssemblyModel> _assemblies = [];
     readonly KeyedModelCollection<TypeModel> _types = [];
 
-    public DomainModel BuildFrom(IAssemblyCollection assemblyCollection, ITypeCollection typeCollection)
+    public DomainModel BuildFrom(IDomainAssemblyCollection domainAssemblies, IDomainTypeCollection domainTypes)
     {
-        foreach (var assembly in assemblyCollection)
+        foreach (var assembly in domainAssemblies)
         {
             _assemblies.Add(new(assembly));
 
             foreach (var type in assembly.GetExportedTypes())
             {
-                typeCollection.Add(type);
+                domainTypes.Add(type);
             }
         }
 
-        foreach (var type in typeCollection)
+        foreach (var type in domainTypes)
         {
             _types.Add(new(type, TypeModel.IdFrom(type), assembly: _assemblies.GetOrDefault(type.Assembly.FullName), isBusinessType: true));
         }
 
         foreach (var type in _types.ToList())
         {
-            type.Apply(t =>
-                type.Init(
-                    genericTypeArguments: BuildGenericTypeArguments(t),
-                    customAttributes: BuildCustomAttributes(t),
-                    properties: BuildProperties(t),
-                    methods: BuildMethods(t),
-                    interfaces: BuildInterfaces(t),
-                    baseType: t.BaseType is not null ? GetOrCreateTypeModel(t.BaseType) : default
-                )
-            );
+            InitTypeModel(type);
         }
 
         return new(new(_assemblies), new(_types));
@@ -46,16 +37,33 @@ public class DomainModelBuilder(DomainBuilderOptions _domainBuilderOptions)
         var id = TypeModel.IdFrom(type);
         if (_types.TryGetValue(id, out var result)) { return result; }
 
-        var typeModel = new TypeModel(type, id);
+        var isGenericBusinessType = type.IsGenericType && !type.IsGenericTypeDefinition && _assemblies.Contains(type.Assembly?.FullName ?? string.Empty);
+        var typeModel = new TypeModel(type, id, isBusinessType: isGenericBusinessType);
+
         _types.Add(typeModel);
 
+        InitTypeModel(typeModel);
+
         return typeModel;
+    }
+
+    void InitTypeModel(TypeModel typeModel)
+    {
+        typeModel.Apply(t =>
+            typeModel.Init(
+                genericTypeArguments: typeModel.IsBusinessType || typeModel.IsGenericType ? BuildGenericTypeArguments(t) : [],
+                customAttributes: typeModel.IsBusinessType ? BuildCustomAttributes(t) : [],
+                properties: typeModel.IsBusinessType ? BuildProperties(t) : [],
+                methods: typeModel.IsBusinessType ? BuildMethods(t) : [],
+                interfaces: typeModel.IsBusinessType ? BuildInterfaces(t) : [],
+                baseType: (typeModel.IsBusinessType || t.BaseType == typeof(Task)) && t.BaseType is not null ? GetOrCreateTypeModel(t.BaseType) : default
+            )
+        );
     }
 
     ModelCollection<MethodModel> BuildMethods(Type type)
     {
         var methods = new Dictionary<string, MethodModel>();
-
         var constructorInfos = type.GetConstructors(_domainBuilderOptions.ConstuctorBindingFlags) ?? [];
 
         methods[".ctor"] = new(".ctor", constructorInfos.Select(BuildConstructorOverload).ToArray(), IsConstructor: true);

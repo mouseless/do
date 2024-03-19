@@ -10,9 +10,9 @@ public static class DomainExtensions
 
     public static DomainModel GetDomainModel(this ApplicationContext source) => source.Get<DomainModel>();
 
-    public static void ConfigureAssemblyCollection(this LayerConfigurator configurator, Action<IAssemblyCollection> configuration) => configurator.Configure(configuration);
-    public static void ConfigureTypeCollection(this LayerConfigurator configurator, Action<ITypeCollection> configuration) => configurator.Configure(configuration);
+    public static void ConfigureDomainAssemblyCollection(this LayerConfigurator configurator, Action<IDomainAssemblyCollection> configuration) => configurator.Configure(configuration);
+    public static void ConfigureDomainTypeCollection(this LayerConfigurator configurator, Action<IDomainTypeCollection> configuration) => configurator.Configure(configuration);
     public static void ConfigureDomainBuilderOptions(this LayerConfigurator configurator, Action<DomainBuilderOptions> configuration) => configurator.Configure(configuration);
 
-    public static void Add<T>(this ITypeCollection source) => source.Add(typeof(T));
+    public static void Add<T>(this IDomainTypeCollection source) => source.Add(typeof(T));
 }

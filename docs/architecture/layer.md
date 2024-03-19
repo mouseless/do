@@ -154,6 +154,38 @@ public class Build : PhaseBase<WebApplicationBuilder>
 > dependency in `ApplicationContext`. For more information
 > [Running an Application](../architecture/application.md#running-an-application)
 
+Phases can also define context dependencies from other phase artifacts. For 
+example `HttpServerLayer.Build` phase can require `IServiceCollection` which 
+will be provided during `DependencyInjectionLayer.AddServices` phase. 
+
+```csharp
+// DependencyInjectionLayer
+public class AddServices(IServiceCollection _services)
+    : PhaseBase(PhaseOrder.Early)
+{
+    protected override void Initialize()
+    {
+        Context.Add(_services);
+    }
+}
+
+// HttpServerLayer
+public class Build()
+    : PhaseBase<WebApplicationBuilder, IServiceCollection>(PhaseOrder.Latest)
+{
+    protected override void Initialize(WebApplicationBuilder build, IServiceCollection services)
+    {
+        ...
+    }
+}
+```
+
+> :warning:
+>
+> This type of artifact requirement will create a dependency between phases 
+> which results to a layer to layer dependency. In the above example `Build`
+> phase will never execute unless `DependencyLayer` is added to the application
+
 ### Order of a Phase
 
 `PhaseBase` classes has `order` parameter in their constructors. Default order

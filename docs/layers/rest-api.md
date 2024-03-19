@@ -9,8 +9,8 @@ app.Layers.AddRestApi();
 ## Configuration Targets
 
 This layer provides `IApplicationPartCollection` for registering necessary
-application parts, `SwaggerGenOptions`, `SwaggerOptions` and `SwaggerUIOptions`
-for configuring `Swagger` behavior.
+application parts, `MvcNewtonsoftJsonOptions` `SwaggerGenOptions`, 
+`SwaggerOptions` and `SwaggerUIOptions` for configuring `Swagger` behavior.
 
 ### `IApplicationPartCollection`
 
@@ -21,6 +21,17 @@ configurator.ConfigureApplicationParts(applicationParts =>
 {
     ...
 });
+```
+
+### `MvcNewtonsoftJsonOptions`
+
+This target is provided in `AddServices` phase. To configure it in a feature;
+
+```csharp
+ configurator.ConfigureMvcNewtonsoftJsonOptions(options =>
+ {
+     ...
+ });
 ```
 
 ### `SwaggerGenOptions`

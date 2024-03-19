@@ -6,7 +6,7 @@ public class TypeModel(Type type, string id,
 ) : IModel, IEquatable<TypeModel>
 {
     internal static string IdFrom(Type type) =>
-        type.FullName ?? $"{type.Namespace}.{type.Name}[{string.Join(',', type.GenericTypeArguments.Select(IdFrom))}]";
+        type.FullName ?? $"{type.Namespace}.{type.Name}<{string.Join(',', type.GenericTypeArguments.Select(IdFrom))}>";
 
     readonly Type _type = type;
     readonly string _id = id;
@@ -20,6 +20,7 @@ public class TypeModel(Type type, string id,
     public bool IsValueType { get; } = type.IsValueType;
     public bool IsSealed { get; } = type.IsSealed;
     public bool IsInterface { get; } = type.IsInterface;
+    public bool IsGenericType { get; } = type.IsGenericType;
     public bool IsGenericTypeParameter { get; } = type.IsGenericTypeParameter;
     public bool IsGenericMethodParameter { get; } = type.IsGenericMethodParameter;
     public bool ContainsGenericParameters { get; } = type.ContainsGenericParameters;
@@ -31,22 +32,21 @@ public class TypeModel(Type type, string id,
     public ModelCollection<TypeModel> CustomAttributes { get; private set; } = default!;
     public ModelCollection<TypeModel> Interfaces { get; private set; } = default!;
 
-    public MethodModel Constructor => Methods[".ctor"];
+    public MethodModel? Constructor => Methods.TryGetValue(".ctor", out var ctor) ? ctor : default;
 
-    internal void Init(
-        ModelCollection<MethodModel> methods,
-        ModelCollection<PropertyModel> properties,
-        ModelCollection<TypeModel> genericTypeArguments,
-        ModelCollection<TypeModel> customAttributes,
-        ModelCollection<TypeModel> interfaces,
+    internal void Init(ModelCollection<TypeModel> genericTypeArguments,
+        ModelCollection<MethodModel>? methods = default,
+        ModelCollection<PropertyModel>? properties = default,
+        ModelCollection<TypeModel>? customAttributes = default,
+        ModelCollection<TypeModel>? interfaces = default,
         TypeModel? baseType = default
     )
     {
-        Methods = methods;
-        Properties = properties;
         GenericTypeArguments = genericTypeArguments;
-        CustomAttributes = customAttributes;
-        Interfaces = interfaces;
+        Methods = methods ?? [];
+        Properties = properties ?? [];
+        CustomAttributes = customAttributes ?? [];
+        Interfaces = interfaces ?? [];
         BaseType = baseType;
     }
 

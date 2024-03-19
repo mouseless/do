@@ -43,29 +43,30 @@ public static class ForgeExtensions
         configure ??= _ => { };
 
         return source.Application(app =>
-            {
-                app.Layers.AddConfiguration();
-                app.Layers.AddDataAccess();
-                app.Layers.AddDependencyInjection();
-                app.Layers.AddDomain();
-                app.Layers.AddHttpClient();
-                app.Layers.AddHttpServer();
-                app.Layers.AddMonitoring();
-                app.Layers.AddRestApi();
+        {
+            app.Layers.AddCodeGeneration();
+            app.Layers.AddConfiguration();
+            app.Layers.AddDataAccess();
+            app.Layers.AddDependencyInjection();
+            app.Layers.AddDomain();
+            app.Layers.AddHttpClient();
+            app.Layers.AddHttpServer();
+            app.Layers.AddMonitoring();
+            app.Layers.AddRestApi();
 
-                app.Features.AddAuthentication(authentication);
-                app.Features.AddBusiness(business);
-                app.Features.AddCaching(caching);
-                app.Features.AddCommunication(communication);
-                app.Features.AddCore(core);
-                app.Features.AddDatabase(database);
-                app.Features.AddDocumentation(documentation);
-                app.Features.AddExceptionHandling(exceptionHandling);
-                app.Features.AddGreeting(greeting);
-                app.Features.AddLogging(logging);
-                app.Features.AddOrm(orm);
+            app.Features.AddAuthentication(authentication);
+            app.Features.AddBusiness(business);
+            app.Features.AddCaching(caching);
+            app.Features.AddCommunication(communication);
+            app.Features.AddCore(core);
+            app.Features.AddDatabase(database);
+            app.Features.AddDocumentation(documentation);
+            app.Features.AddExceptionHandling(exceptionHandling);
+            app.Features.AddGreeting(greeting);
+            app.Features.AddLogging(logging);
+            app.Features.AddOrm(orm);
 
-                configure(app);
-            });
+            configure(app);
+        });
     }
 }

@@ -101,13 +101,14 @@ To run an application you need to call `Run()` method after forging it.
 Forge.New
     .Application(app =>
     {
-        app.Layers.AddHttpServer();
+        ...
     })
     .Run();
 ```
 
-Application runs in phases provided by its layers. For example an ASP.NET Core
-application typically runs in three phases;
+Application runs in phases provided by its layers. For example 
+`HttpServerLayer` uses ASP.NET Core to build a web application which typically
+runs in three phases;
 
 ```mermaid
 flowchart TB
@@ -124,7 +125,9 @@ above example, `HttpServerLayer` (ASP.NET Core) introduced these three phases.
 At the beginning of each phase, application initializes it by providing an
 `ApplicationContext` instance. This way each phase can add/get certain objects
 to/from the context, such as `IServiceCollection`, `IMiddlewareCollection`,
-`IEndpointRouteBuilder` etc.
+`IEndpointRouteBuilder` etc. 
+Refer to [Readiness via Dependencies](./layer.md#readiness-via-dependencies) 
+for more details.
 
 > :warning:
 >
