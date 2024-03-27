@@ -90,26 +90,6 @@ public static class Singleton
                         : null
                 );
             }
-
-            [HttpPut]
-            [Produces("application/json")]
-            [Route("singleton/test-async-object")]
-            public async Task<object> TestAsyncObject([FromServices] Singleton target, [FromBody] object request)
-            {
-                var result = await target.TestAsyncObject(request);
-
-                return result;
-            }
-
-            [HttpPut]
-            [Produces("application/json")]
-            [Route("singleton/test-object")]
-            public object TestObject([FromServices] Singleton target, [FromBody] object request)
-            {
-                var result = target.TestObject(request);
-
-                return result;
-            }
         }
     """;
 }

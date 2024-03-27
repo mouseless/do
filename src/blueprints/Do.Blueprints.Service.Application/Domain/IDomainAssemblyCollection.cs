@@ -2,4 +2,4 @@
 
 namespace Do.Domain;
 
-public interface IDomainAssemblyCollection : ICollection<Assembly>, IEnumerable<Assembly>, IEnumerable, IList<Assembly> { }
+public interface IDomainAssemblyCollection : IList<Assembly> { }

@@ -1,12 +1,10 @@
 ﻿using Do.Communication;
 using Do.Database;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Do.Test;
 
 public class Singleton(
-    ILogger<Singleton> _logger,
     TimeProvider _timeProvider,
     Func<Entity> _newEntity,
     ITransaction _transaction,
@@ -14,21 +12,11 @@ public class Singleton(
     IClient<Singleton> _client
 ) : SingletonBase(_timeProvider), IInterface
 {
-    internal void TestOperationWithGenericParameter()
+    public string TestOperationWithGenericParameter(string parameter)
     {
-        _newOperationWithGenericParameter().With().Execute();
-    }
-
-    public void VoidParameterless()
-    {
-        _logger.LogInformation($"{nameof(VoidParameterless)} was called");
-    }
-
-    public async Task VoidParameterlessAsync()
-    {
-        await Task.Delay(10);
-
-        _logger.LogInformation($"{nameof(VoidParameterlessAsync)} was called");
+        return _newOperationWithGenericParameter()
+            .With(parameter)
+            .Execute();
     }
 
     public async Task<List<PullRequest>> TestClient()
@@ -113,15 +101,6 @@ public class Singleton(
         );
 
         throw new();
-    }
-
-    public object TestObject(object request) => request;
-
-    public async Task<object> TestAsyncObject(object request)
-    {
-        await Task.Delay(100);
-
-        return request;
     }
 
     public async Task TestTransactionNullable(Entity? entity)

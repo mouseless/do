@@ -2,7 +2,17 @@
 
 public class OperationWithGenericParameter<TEntity>
 {
-    public OperationWithGenericParameter<TEntity> With() => this;
+    string _parameter = default!;
 
-    public void Execute() { }
+    internal OperationWithGenericParameter<TEntity> With(string parameter)
+    {
+        _parameter = parameter;
+
+        return this;
+    }
+
+    public string Execute()
+    {
+        return _parameter;
+    }
 }

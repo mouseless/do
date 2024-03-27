@@ -54,7 +54,11 @@ public class Compiler(GeneratedAssemblyDescriptor _descriptor)
                 errors.AppendLine();
             }
 
-            throw new Exception($"{errors}");
+            throw new Exception($"""
+                {errors}
+
+                {string.Join(Environment.NewLine, _descriptor.Codes)}
+            """);
         }
 
         ms.Seek(0, SeekOrigin.Begin);

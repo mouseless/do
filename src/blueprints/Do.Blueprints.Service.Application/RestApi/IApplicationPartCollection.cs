@@ -1,3 +1,3 @@
 ﻿namespace Do.RestApi;
 
-public interface IApplicationPartCollection : ICollection<ApplicationPartDescriptor>, IEnumerable<ApplicationPartDescriptor>, IEnumerable, IList<ApplicationPartDescriptor> { }
+public interface IApplicationPartCollection : IList<ApplicationPartDescriptor> { }

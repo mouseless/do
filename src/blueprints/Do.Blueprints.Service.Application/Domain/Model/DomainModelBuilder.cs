@@ -51,12 +51,13 @@ public class DomainModelBuilder(DomainBuilderOptions _domainBuilderOptions)
     {
         typeModel.Apply(t =>
             typeModel.Init(
-                genericTypeArguments: typeModel.IsBusinessType || typeModel.IsGenericType ? BuildGenericTypeArguments(t) : [],
-                customAttributes: typeModel.IsBusinessType ? BuildCustomAttributes(t) : [],
-                properties: typeModel.IsBusinessType ? BuildProperties(t) : [],
-                methods: typeModel.IsBusinessType ? BuildMethods(t) : [],
-                interfaces: typeModel.IsBusinessType ? BuildInterfaces(t) : [],
-                baseType: (typeModel.IsBusinessType || t.BaseType == typeof(Task)) && t.BaseType is not null ? GetOrCreateTypeModel(t.BaseType) : default
+                customAttributes: typeModel.IsBusinessType ? BuildCustomAttributes(t) : default,
+                properties: typeModel.IsBusinessType ? BuildProperties(t) : default,
+                methods: typeModel.IsBusinessType ? BuildMethods(t) : default,
+                interfaces: typeModel.IsBusinessType ? BuildInterfaces(t) : default,
+                baseType: (typeModel.IsBusinessType || t.BaseType == typeof(Task)) && t.BaseType is not null ? GetOrCreateTypeModel(t.BaseType) : default,
+                genericTypeDefinition: typeModel.IsGenericType ? GetOrCreateTypeModel(t.GetGenericTypeDefinition()) : default,
+                genericTypeArguments: typeModel.IsGenericType ? BuildGenericTypeArguments(t) : default
             )
         );
     }

@@ -15,4 +15,12 @@ public static class DomainExtensions
     public static void ConfigureDomainBuilderOptions(this LayerConfigurator configurator, Action<DomainBuilderOptions> configuration) => configurator.Configure(configuration);
 
     public static void Add<T>(this IDomainTypeCollection source) => source.Add(typeof(T));
+
+    public static void Apply(this IEnumerable<TypeModel> types, Action<Type> action)
+    {
+        foreach (var type in types)
+        {
+            type.Apply(i => action(i));
+        }
+    }
 }

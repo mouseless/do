@@ -7,6 +7,10 @@
     during initialization of a service
   - `RestApiLayer` now provides api model to generate controller code from
     domain model
+  - `RestApiLayer` now provides model binder configuration to allow custom
+    parameter types from action parameters
+  - `DefaultBusinessFeature` now generates api model from domain model
+  - `DefaultBusinessFeature` now generates model binders for entity parameters
 
 ## Improvements
 
@@ -19,7 +23,7 @@
 - `CanReturn()` helper is added for `MethodModel` which loops through all
   overloads and compares return types for given `TypeModel`
     - Generic `Task` return types are also supported
-- `MvcNewtonsoftJsonOptions` is added to `RestApiLayer` as configuration target 
+- `MvcNewtonsoftJsonOptions` is added to `RestApiLayer` as configuration target
 
 ## Bugfixes
 

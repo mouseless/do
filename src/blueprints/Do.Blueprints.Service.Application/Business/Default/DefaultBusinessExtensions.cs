@@ -35,4 +35,20 @@ public static class DefaultBusinessExtensions
 
     internal static bool IsSingleton(this TypeModel type) =>
         !type.IsTransient() && !type.IsScoped() && type.Properties.All(p => !p.IsPublic);
+
+    internal static bool IsPrimitive(this TypeModel type) =>
+        type.IsValueType || type.IsAssignableTo<string>();
+
+    internal static bool IsPrimitiveList(this TypeModel type) =>
+        type.IsGenericType &&
+        type.GenericTypeDefinition?.IsAssignableTo(typeof(List<>)) == true &&
+        type.GenericTypeArguments.First().IsPrimitive();
+
+    internal static bool IsEntity(this TypeModel type) =>
+        type.IsClass && !type.IsAbstract &&
+        type.Constructor?.Overloads.Any(c => c
+            .Parameters.Any(p => p
+                .ParameterType.Name.StartsWith("IEntityContext")
+            )
+        ) == true;
 }

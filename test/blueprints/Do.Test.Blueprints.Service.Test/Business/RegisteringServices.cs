@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Do.Test.Business;
+
 public class RegisteringServices : TestServiceSpec
 {
     [Test]

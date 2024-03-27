@@ -1,5 +1,5 @@
-﻿using Do.Architecture;
-using Do.Domain.Model;
+using Do.Architecture;
+using Do.Business.Default.RestApiConventions;
 using Do.RestApi.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
@@ -70,7 +70,7 @@ public class DefaultBusinessFeature(List<Assembly> _domainAssemblies)
 
         configurator.ConfigureApiModel(api =>
         {
-            api.References.AddRange(_domainAssemblies);
+            _domainAssemblies.ForEach(a => api.Reference.Add(a.GetName().FullName, a));
 
             var domainModel = configurator.Context.GetDomainModel();
             foreach (var type in domainModel.Types.Where(t => !t.IsIgnored()))
@@ -81,30 +81,40 @@ public class DefaultBusinessFeature(List<Assembly> _domainAssemblies)
                 var controller = new ControllerModel(type.Name);
                 foreach (var method in type.Methods.Where(m => !m.IsConstructor && m.Overloads.Count(o => o.IsPublic) > 0))
                 {
-                    var overload = method.Overloads.OrderByDescending(o => o.Parameters.Count).First();
+                    var overload = method.Overloads.OrderByDescending(o => o.Parameters.Count).First(); // overload with most parameters
                     if (overload.ReturnType is null) { continue; }
 
-                    if (overload.Parameters.Count > 0) { continue; } // TODO for now only parameterless
+                    // TODO for now only primitive, list of primitive and entity parameters
+                    if (overload.Parameters.Count(p => !p.ParameterType.IsPrimitive() && !p.ParameterType.IsPrimitiveList() && !p.ParameterType.IsEntity()) > 0) { continue; }
                     if (overload.ReturnType.FullName != typeof(void).FullName &&
                         overload.ReturnType.FullName != typeof(Task).FullName) { continue; } // TODO for now only void
 
-                    controller.Actions.Add(
+                    controller.Action.Add(
+                        method.Name,
                         new(
                             Name: method.Name,
                             Method: HttpMethod.Post,
                             Route: $"generated/{type.Name}/{method.Name}",
                             Return: new(async: overload.ReturnType.FullName == typeof(Task).FullName),
-                            Statements: new(
-                                FindTarget: "target",
-                                InvokeMethod: new(method.Name)
-                            )
+                            FindTargetStatement: "target",
+                            InvokedMethodName: method.Name
                         )
-                        { Parameters = [new(ParameterModelFrom.Services, type.FullName, "target")] }
+                        {
+                            Parameters = [
+                                new(ParameterModelFrom.Services, type.FullName, "target"),
+                                .. overload.Parameters.Select(p => new ParameterModel(ParameterModelFrom.Body, p.ParameterType.CSharpFriendlyFullName, p.Name))
+                            ]
+                        }
                     );
                 }
 
-                api.Controllers.Add(controller);
+                api.Controller.Add(controller.Name, controller);
             }
+        });
+
+        configurator.ConfigureApiModelConventions(conventions =>
+        {
+            conventions.Add(new LookupEntityByIdConvention(configurator.Context.GetDomainModel()));
         });
 
         configurator.ConfigureMvcNewtonsoftJsonOptions(options =>
