@@ -11,7 +11,8 @@ app.Layers.AddDomain();
 ## Configuration Targets
 
 This layer provides `IDomainAssemblyCollection`, `IDomainTypeCollection` and 
-`DomainBuilderOptions` as configuration targets for building `DomainModel`.
+`DomainBuilderOptions`, `DomainConventionCollection`, `DomainIndexers` as 
+configuration targets for building `DomainModel`.
 
 ### `IDomainAssemblyCollection`
 
@@ -37,13 +38,37 @@ configurator.ConfigureDomainTypeCollection(types =>
 });
 ```
 
-### `DomainOptions`
+### `DomainBuilderOptions`
 
 This target is provided in `BuildConfiguration` phase. To configure it in a 
 feature;
 
 ```csharp
 configurator.ConfigureDomainBuilderOptions(options =>
+{
+    ...
+});
+```
+
+### `DomainConventionCollection`
+
+This target is provided in `BuildConfiguration` phase. To configure it in a 
+feature;
+
+```csharp
+configurator.ConfigureDomainMetaData(metadata =>
+{
+    ...
+});
+```
+
+### `DomainIndexerCollection`
+
+This target is provided in `BuildConfiguration` phase. To configure it in a 
+feature;
+
+```csharp
+configurator.ConfigureDomainIndexers(indexers =>
 {
     ...
 });

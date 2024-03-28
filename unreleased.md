@@ -7,6 +7,10 @@
     during initialization of a service
   - `RestApiLayer` now provides api model to generate controller code from
     domain model
+  - `DomainLayer` now provides a metadata mechanism that allows you to add
+    custom attributes to domain model
+  - `DomainLayer` now provides a indexer mechanism that allows you to index
+    models based on their attributes
 
 ## Improvements
 

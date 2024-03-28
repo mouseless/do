@@ -2,13 +2,15 @@
 
 namespace Do.Domain.Model;
 
-public class ModelCollection<T>() : IEnumerable<T>
+public class ModelCollection<T> : IEnumerable<T>, IIndexedCollection<T>
     where T : IModel
 {
-    readonly KeyedModelCollection<T> _models = [];
+    readonly ModelKeyedCollection<T> _models = [];
+    readonly ModelIndex<T> _index = [];
+
+    public ModelCollection() { }
 
     public ModelCollection(IEnumerable<T> models)
-        : this()
     {
         foreach (var model in models)
         {
@@ -16,8 +18,21 @@ public class ModelCollection<T>() : IEnumerable<T>
         }
     }
 
+    ModelCollection(IEnumerable<T> models, ModelIndex<T> index)
+    {
+        foreach (var model in models)
+        {
+            _models.Add(model);
+        }
+
+        _index = index;
+    }
+
     public T this[string id] =>
         _models[id];
+
+    public T this[Type type] =>
+        _models[TypeModel.IdFrom(type)];
 
     public int Count => _models.Count;
 
@@ -30,7 +45,17 @@ public class ModelCollection<T>() : IEnumerable<T>
     public bool TryGetValue(string id, [NotNullWhen(true)] out T? model) =>
        _models.TryGetValue(id, out model);
 
+    public ModelCollection<T> GetIndex(object key) =>
+        _index.TryGetValue(new(key), out var result) ? result : new([]);
+
+    public ModelCollection<T> Having<TAttribute>() where TAttribute : Attribute =>
+        GetIndex(typeof(TAttribute));
+
+    public ModelCollection<T> CreateReferenceModelCollection(Func<T, bool> selector) =>
+       new(_models.Where(selector), _index);
+
     public IEnumerator<T> GetEnumerator() => _models.GetEnumerator();
 
+    ModelIndex<T> IIndexedCollection<T>.Index => _index;
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

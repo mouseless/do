@@ -21,14 +21,39 @@ public class DefaultOrmFeature : IFeature<OrmConfigurator>
             services.AddSingleton(typeof(IQueryContext<>), typeof(QueryContext<>));
         });
 
+        configurator.ConfigureDomainIndexers(indexers =>
+        {
+            indexers.AddAttributeIndexer<QueryAttribute>();
+            indexers.AddAttributeIndexer<EntityAttribute>();
+        });
+
+        configurator.ConfigureDomainMetaData(metadata =>
+        {
+            metadata
+                .Type
+                    .Add(
+                        add: (query, adder) =>
+                        {
+                            var parameter = query.Constructors.SelectMany(o => o.Parameters).First(p => p.ParameterType.IsAssignableTo(typeof(IQueryContext<>))) ??
+                                throw new("Parameter model not found!");
+
+                            var entity = parameter.ParameterType.GenericTypeArguments.First();
+
+                            entity.Apply(t => adder.Add(query, new QueryAttribute(t)));
+                            query.Apply(t => adder.Add(entity, new EntityAttribute(t)));
+                        },
+                        when: type => type.Constructors.Any() && type.Constructors.Any(o => o.Parameters.Any(p => p.ParameterType.IsAssignableTo(typeof(IQueryContext<>))))
+                    );
+        });
+
         configurator.ConfigureAutoPersistenceModel(model =>
         {
             var domainModel = configurator.Context.GetDomainModel();
 
-            foreach (var assembly in domainModel.Assemblies)
-            {
-                assembly.Apply(a => model.AddEntityAssembly(a));
-            }
+            var typeSource = new TypeSource();
+            domainModel.Types.Having<EntityAttribute>().Apply(t => typeSource.Add(t));
+
+            model.AddTypeSource(typeSource);
 
             model
                 .Conventions.Add(Table.Is(x => x.EntityType.Name))
@@ -63,15 +88,10 @@ public class DefaultOrmFeature : IFeature<OrmConfigurator>
 
         configurator.ConfigureAutomapping(automapping =>
         {
-            automapping.ShouldMapType.Add(t =>
-                t.IsClass && !t.IsAbstract &&
-                t.GetConstructors().Any(c => c
-                    .GetParameters().Any(p => p
-                        .ParameterType.IsAssignableTo(typeof(IEntityContext<>).MakeGenericType(t))
-                    )
-                )
-            );
+            var domainModel = configurator.Context.GetDomainModel();
+            var mappedTypes = domainModel.Types.Having<EntityAttribute>();
 
+            automapping.ShouldMapType.Add(t => mappedTypes.Contains(t));
             automapping.MemberIsId.Add(m => m.PropertyType == typeof(Guid) && m.Name == "Id");
             automapping.ShouldMapMember.Add(m => m.IsAutoProperty && !m.PropertyType.IsAssignableTo(typeof(ICollection)));
         });

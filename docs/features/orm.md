@@ -1,9 +1,9 @@
 # Orm
 
 This feature setups _NHibernate_ which registers `IEntityContext` and
-`IQueryContext` implementations and adds `AutoPersistenceModel` and
-`AutoMapping` conventions along with an `Instantiator` interceptor
-for _NHibernate_.
+`IQueryContext` implementations, configures and uses the generated 
+`DomainModel`to add `AutoPersistenceModel` and `AutoMapping` conventions along
+with an `Instantiator` interceptor for _NHibernate_.
 
 Add this feature using `AddOrm()` extension;
 

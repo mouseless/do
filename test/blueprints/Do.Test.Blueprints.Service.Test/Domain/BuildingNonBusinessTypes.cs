@@ -1,4 +1,5 @@
-﻿using Do.Domain.Model;
+﻿using Do.Domain.Configuration;
+using Do.Domain.Model;
 using Do.Orm;
 
 namespace Do.Test.Domain;
@@ -12,37 +13,31 @@ public class BuildingNonBusinessTypes : TestServiceSpec
     }
 
     [Test]
-    public void Non_business_types_with_no_generic_parameters_are_initialized_with_empty_collections([Values(typeof(string), typeof(int), typeof(Task))] Type type)
+    public void Non_business_types_value_types_with_no_generic_parameters_have_basic_build_level([Values(typeof(int), typeof(char))] Type type)
     {
         var model = DomainModel.Types[type];
 
-        model.Properties.ShouldNotBeNull();
-        model.Properties.Count().ShouldBe(0);
+        model.IsBuilt(BuildLevel.Basics).ShouldBeTrue();
+        model.IsBuilt(BuildLevel.Generics).ShouldBeFalse();
+    }
 
-        model.GenericTypeArguments.ShouldNotBeNull();
-        model.GenericTypeArguments.Count().ShouldBe(0);
+    [Test]
+    public void Non_business_types_have_inheritance_build_level([Values(typeof(string))] Type type)
+    {
+        var model = DomainModel.Types[type];
 
-        model.Methods.ShouldNotBeNull();
-        model.Methods.Count().ShouldBe(0);
-
-        model.Interfaces.ShouldNotBeNull();
-        model.Interfaces.Count().ShouldBe(0);
-
-        model.CustomAttributes.ShouldNotBeNull();
-        model.CustomAttributes.Count().ShouldBe(0);
-
-        model.Constructor.ShouldBeNull();
+        model.IsBuilt(BuildLevel.Inheritance).ShouldBeTrue();
     }
 
     [Test]
     public void Non_business_types_with_generic_parameters_are_initialized_with_generic_arguments([Values(typeof(List<Entity>), typeof(Func<Entity>), typeof(IQueryContext<Entity>))] Type type)
     {
         var entityModel = DomainModel.Types[typeof(Entity)];
-        var listEntity = DomainModel.Types[type];
+        var model = DomainModel.Types[type];
 
-        listEntity.ShouldNotBeNull();
-        listEntity.GenericTypeArguments.Count().ShouldBe(1);
-        listEntity.GenericTypeArguments.First().ShouldBe(entityModel);
+        model.IsBuilt(BuildLevel.Generics).ShouldBeTrue();
+        model.GenericTypeArguments.Count.ShouldBe(1);
+        model.GenericTypeArguments.First().ShouldBe(entityModel);
     }
 
     [Test]

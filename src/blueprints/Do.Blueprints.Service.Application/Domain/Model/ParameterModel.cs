@@ -4,9 +4,13 @@ public record ParameterModel(
     string Name,
     TypeModel ParameterType,
     bool IsOptional,
-    object? DefaultValue
-) : IModel
+    object? DefaultValue,
+    AttributeCollection CustomAttributes
+) : IMemberModel
 {
-    string IModel.Id { get; } = Name;
+    public bool Has<T>() where T : Attribute =>
+        CustomAttributes.ContainsKey<T>();
+
+    string IModel.Id => Name;
 }
 
