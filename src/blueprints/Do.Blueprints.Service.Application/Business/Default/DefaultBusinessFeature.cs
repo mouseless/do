@@ -8,7 +8,7 @@ namespace Do.Business.Default;
 public class DefaultBusinessFeature(List<Assembly> _assemblies, Assembly _controllerAssembly)
     : IFeature<BusinessConfigurator>
 {
-    const BindingFlags _defaultMemberBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+    const BindingFlags DefaultMemberBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
     public void Configure(LayerConfigurator configurator)
     {
@@ -22,9 +22,9 @@ public class DefaultBusinessFeature(List<Assembly> _assemblies, Assembly _contro
 
         configurator.ConfigureDomainBuilderOptions(options =>
         {
-            options.ConstuctorBindingFlags = _defaultMemberBindingFlags;
-            options.MethodBindingFlags = _defaultMemberBindingFlags;
-            options.PropertyBindingFlags = _defaultMemberBindingFlags;
+            options.ConstuctorBindingFlags = DefaultMemberBindingFlags;
+            options.MethodBindingFlags = DefaultMemberBindingFlags;
+            options.PropertyBindingFlags = DefaultMemberBindingFlags;
         });
 
         configurator.ConfigureServiceCollection(services =>

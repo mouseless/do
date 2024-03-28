@@ -18,9 +18,7 @@ public class ConvertEnumToStringSchemaFilter : ISchemaFilter
             foreach (var enumName in Enum.GetNames(context.Type))
             {
                 var memberInfo = context.Type.GetMember(enumName).FirstOrDefault(m => m.DeclaringType == context.Type);
-                var enumMemberAttribute = memberInfo == null
-                    ? null
-                    : memberInfo.GetCustomAttributes(typeof(EnumMemberAttribute), false).OfType<EnumMemberAttribute>().FirstOrDefault();
+                var enumMemberAttribute = memberInfo?.GetCustomAttributes(typeof(EnumMemberAttribute), false).OfType<EnumMemberAttribute>().FirstOrDefault();
 
                 var label = enumMemberAttribute == null || string.IsNullOrWhiteSpace(enumMemberAttribute.Value)
                     ? enumName

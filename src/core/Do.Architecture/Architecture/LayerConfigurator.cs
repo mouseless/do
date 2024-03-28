@@ -40,7 +40,7 @@ public class LayerConfigurator
     LayerConfigurator(ApplicationContext context, params Target[] targets)
     {
         _context = context;
-        _targets = [..targets];
+        _targets = [.. targets];
     }
 
     public ApplicationContext Context => _context;

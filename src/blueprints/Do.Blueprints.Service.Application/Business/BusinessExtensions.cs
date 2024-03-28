@@ -16,7 +16,7 @@ public static class BusinessExtensions
         throw new Exception("AddScopedWithFactory<TService, TImplementation> should have existed");
 
     public static IServiceCollection AddTransientWithFactory(this IServiceCollection source, Type service) =>
-        (IServiceCollection?)_addTransientWithFactory.MakeGenericMethod(service, service).Invoke(null, new object[] { source }) ??
+        (IServiceCollection?)_addTransientWithFactory.MakeGenericMethod(service, service).Invoke(null, [source]) ??
         throw new("Should've returned an IServiceCollection instance");
     public static IServiceCollection AddTransientWithFactory(this IServiceCollection source, Type service, Type implementation) =>
         (IServiceCollection?)_addTransientWithFactory.MakeGenericMethod(service, implementation).Invoke(null, [source]) ??
@@ -33,7 +33,7 @@ public static class BusinessExtensions
         .AddTransient<TService, TImplementation>();
 
     public static IServiceCollection AddScopedWithFactory(this IServiceCollection source, Type service) =>
-        (IServiceCollection?)_addScopedWithFactory.MakeGenericMethod(service, service).Invoke(null, new object[] { source }) ??
+        (IServiceCollection?)_addScopedWithFactory.MakeGenericMethod(service, service).Invoke(null, [source]) ??
         throw new("Should've returned an IServiceCollection instance");
     public static IServiceCollection AddScopedWithFactory(this IServiceCollection source, Type service, Type implementation) =>
         (IServiceCollection?)_addScopedWithFactory.MakeGenericMethod(service, implementation).Invoke(null, [source]) ??

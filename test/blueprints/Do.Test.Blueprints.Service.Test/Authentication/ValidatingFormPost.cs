@@ -12,8 +12,7 @@ public class ValidatingFormPost : TestServiceSpec
         var request = GiveMe.AnHttpRequest(
             metadata: [new UseAttribute<Do.Authentication.FixedToken.Middleware>()],
             form: GiveMe.ADictionary(
-                // 12token -sha256-> 169E215B21C17B9D1991A7243597433083BB332EF49DA4EC414643A12D2FF5AC
-                ("hash", "Fp4hWyHBe50ZkackNZdDMIO7My70naTsQUZDoS0v9aw="),
+                ("hash", "Fp4hWyHBe50ZkackNZdDMIO7My70naTsQUZDoS0v9aw="), // 12token -sha256-> 169E215B21C17B9D1991A7243597433083BB332EF49DA4EC414643A12D2FF5AC
                 ("value-1", "1"),
                 ("value-2", "2")
             )
@@ -32,8 +31,7 @@ public class ValidatingFormPost : TestServiceSpec
         var request = GiveMe.AnHttpRequest(
             metadata: [new UseAttribute<Do.Authentication.FixedToken.Middleware>()],
             form: GiveMe.ADictionary(
-              // 12token -sha256-> 169E215B21C17B9D1991A7243597433083BB332EF49DA4EC414643A12D2FF5AC
-              ("hash", "Fp4hWyHBe50ZkackNZdDMIO7My70naTsQUZDoS0v9aw="),
+              ("hash", "Fp4hWyHBe50ZkackNZdDMIO7My70naTsQUZDoS0v9aw="), // 12token -sha256-> 169E215B21C17B9D1991A7243597433083BB332EF49DA4EC414643A12D2FF5AC
               ("value-1", "1"),
               ("value-2", "2")
             )
